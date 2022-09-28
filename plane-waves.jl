@@ -139,8 +139,8 @@ plane_wave=build_function(A*sin(getω(K, α)*t - dot(K, X)), X, t, K, α, A, exp
 
 # ╔═╡ 488711a3-e531-448a-96a9-2b7fda66230c
 md"""
-kx $(@bind kx1 NumberField(range(-1, stop=1, step=0.1), default=0))
-kz $(@bind kz1 NumberField(range(-1, stop=1, step=0.1), default=0))
+kx $(@bind kx1 NumberField(range(-1, stop=1, step=0.1), default=0.1))
+kz $(@bind kz1 NumberField(range(-1, stop=1, step=0.1), default=0.1))
 """
 
 # ╔═╡ 00b6b63f-e4cf-496c-8d24-21b229ec630c
