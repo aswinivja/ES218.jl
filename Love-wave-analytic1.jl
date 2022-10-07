@@ -7,11 +7,7 @@ using InteractiveUtils
 # This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
 macro bind(def, element)
     quote
-        local iv = try
-            Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value
-        catch
-            b -> missing
-        end
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
         local el = $(esc(element))
         global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
         el
@@ -44,13 +40,18 @@ TableOfContents()
 # ╔═╡ 2a41b15e-1a0e-4c92-a3a5-53603faacea1
 md"""
 # Love Waves
-This notebook studies the simplest case of plane Love waves in a single homogeneous layer overlying a homogeneous half-space. This is an eigenvalue problem.
-The boundary and the free-surface conditions limit the allowable eigenvalues and eigenfunctions. In other words, for a given frequency, the horizontal slowness can only take special values. It can often happen that more than one value of the horizontal slowness contributes to the Love wave of a particular frequency. 
+This notebook studies the simplest case of plane Love waves in a single homogeneous layer overlying a homogeneous half-space. This is an eigenvalue problem, where the boundary and the free-surface conditions limit the allowable eigenvalues and eigenfunctions. In other words, for a given frequency, the horizontal slowness can only take special values. It can often happen that more than one value of the horizontal slowness contributes to the Love wave of a particular frequency. 
 
 By interacting with this notebook, we can
 
 - visualize the displacement wavefield for different modes;
 - notice the cut-off frequency of the $n$th order higher mode.
+
+##### Introduction of Seismology
+ES218; August 2022
+
+Instructor: *Pawan Bharadwaj*,
+Indian Institute of Science, Bengaluru, India
 
 """
 
@@ -102,7 +103,7 @@ md"We now write an expression for the wavefield in the top layer using the verti
 u1 = trail_soln(p, η₁, A₁, B₁)
 
 # ╔═╡ 52c90f98-d314-4c5f-8b8d-4aff4c32b6d9
-simplify(L1(u1))
+simplify(expand_derivatives(L1(u1)) / u1)
 
 # ╔═╡ d6dc2422-6be3-447e-b7c1-be655971b6f7
 md"Similarly, for the half space."
@@ -219,16 +220,18 @@ function medium_input()
         ]
         inputs2 = [
             md"""
-            frequency (Hz) $(Child("freq", Slider(range(0.0, 0.25, step=0.01), default=0.08, show_value=true)))
+            $(Child("freq", Slider(range(0.0, 0.25, step=0.01), default=0.08, show_value=true)))
             """,
         ]
 
         md"""
-### Medium
+### Parameters
+##### Medium
 Choose the depth of the boundary between the top layer and the halfspace.
 Slide to adjust the seismic velocities ∈ [1, 7] km/s and densities ∈ [1, 7] gm/cc of the top layer and the halfspace. By default, the parameters corresponding to the curst and mantle will be chosen.
   $(inputs1)
-### Frequency
+		
+##### Frequency (Hz)
   $(inputs2)
         """
     end
@@ -331,12 +334,12 @@ function plot_roots(x1, x2, cgrid)
     a = [f1((inv(c))) for c in cgrid]
     b = [f2((inv(c))) for c in cgrid]
 
-    plot(cgrid, real.(a), c=:red, label="real(ex1)", legend=:outertopleft, size=(800, 300), title="F(c)=ex1(c) - ex2(c)", xlabel="phase velocity (c)", margin=5mm)
+    plot(cgrid, real.(a), c=:red, label="real(ex1)", legend=:outertopleft, size=(800, 300), title="F(c)=ex1(c) - ex2(c)", xlabel="phase velocity (c)", margin=5mm, xlim=(cgrid[1], cgrid[end]))
     plot!(cgrid, imag.(a), c=:blue, label="imag(ex1)")
     plot!(cgrid, real.(b), c=:red, line=(:dash, 2), label="real(ex2)")
     plot!(cgrid, imag.(b), c=:blue, line=(:dash, 2), label="imag(ex2)")
-    vline!([medium.β₁], label="β₁", w=3, c=:black, l=(:dot, 2))
-    vline!([medium.β₂], label="β₂", w=3, c=:black, l=(:dash, 2))
+    vline!([medium.β₁], label="β₁", w=3, c=:white, l=(:dot, 7))
+    vline!([medium.β₂], label="β₂", w=3, c=:white, l=(:dash, 7))
 end
 
 # ╔═╡ ca8f817d-8715-40d4-9f48-ded6a79b421e
@@ -378,7 +381,7 @@ plot_Love_waves()
 # ╔═╡ 16c826bf-fa48-423c-bfec-195f7fc502f8
 md"""
 ## TODO
-- Have a plot that shows how a wavelet disperses as it propagates, which needs sum of frequencies, with initial phases assigned.
+- Have a plot that shows how a wavelet disperses as it propagates, which needs a sum of frequencies, with some initial phases assigned.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1902,7 +1905,7 @@ version = "1.4.1+0"
 # ╠═644637c9-c32d-4335-af59-3452263a9707
 # ╠═09a8041d-6443-4e83-8443-e0e2aa05317a
 # ╠═0fc4d1a1-25ac-49c9-b74b-a9f26928c652
-# ╠═794a1f79-708d-4305-8aa0-d2673f34e31f
+# ╟─794a1f79-708d-4305-8aa0-d2673f34e31f
 # ╠═7bd5a551-3379-4270-81d0-9506292e6d8c
 # ╠═b3e662bf-8d13-418b-886c-b29456d62454
 # ╠═3fa22358-6d61-4b9a-9aa8-39d2b1c6a917
@@ -1916,7 +1919,7 @@ version = "1.4.1+0"
 # ╟─b2858a78-4498-4374-9ee0-c68f3dfca6e8
 # ╠═cc173455-2ed0-42f3-a9c0-0dfdbbe982ee
 # ╠═ad78f0ef-460d-4b62-8bbc-0f7059214b38
-# ╠═df35e923-b43c-4809-a9db-32a371fc9010
+# ╟─df35e923-b43c-4809-a9db-32a371fc9010
 # ╠═928f806a-3cc2-11ed-09c8-7f3b53b830e2
 # ╠═840a743a-e298-4f99-ae6e-11c85b6f5bc5
 # ╠═355e039d-db6d-48b4-a7d7-5f73686e6d56
@@ -1925,10 +1928,10 @@ version = "1.4.1+0"
 # ╠═236e2338-f057-4c33-80e2-7dd8ea9ce206
 # ╠═8912a771-1914-42a7-a35b-43cb63971a41
 # ╠═d49ae6c9-a4ee-45f0-99c3-ab9f23ab895d
-# ╠═db4a22f5-74eb-477e-9426-065dcfd1751c
+# ╟─db4a22f5-74eb-477e-9426-065dcfd1751c
 # ╠═ccbb61f1-c7a1-4cc1-a5c8-0555dd664e16
 # ╠═d76e9b6a-a33c-4342-985e-48f8ee91bf71
-# ╠═b79f409d-a91e-4e4b-8e16-dff4769924f6
+# ╟─b79f409d-a91e-4e4b-8e16-dff4769924f6
 # ╠═723c2f5f-04e3-4cc2-94dc-1780cb2a2179
 # ╠═330b0dd1-85ed-4fea-bf8f-78bfe3cdf335
 # ╟─16c826bf-fa48-423c-bfec-195f7fc502f8
